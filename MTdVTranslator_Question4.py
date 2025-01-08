@@ -68,8 +68,11 @@ class MTDVTranslator:
         """
         header = [
             "import sys",
-            "def init_ruban(size, size2=0):",
-            "   return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * size2) + ([0] * (1000 - size - size2 - 2 - 500))",
+            "def init_ruban(size):",
+            "   if sys.argv[2]:",
+            "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * int(sys.argv[2])) + ([0] * (1000 - size - int(sys.argv[2]) - 2 - 500))",
+            "   else:",
+            "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([0] * (1000 - size - 2 - 500))",
             "def G(X):",
             "    X.append(X[-1]-1)",
             "    X.pop(0)",
@@ -78,13 +81,15 @@ class MTDVTranslator:
             "    X.append(X[-1]+1)",
             "    X.pop(0)",
             "",
-            "def V1(ruban, X):",
-            "    ruban.pop(X[-1])",
-            "    ruban.insert(X[-1], 1)",
+            "def V1():",
+            "    index = X[-1]",
+            "    ruban.pop(index)",
+            "    ruban.insert(index, 1)",
             "",
-            "def V0(ruban, X):",
-            "    ruban.pop(X[-1])",
-            "    ruban.insert(X[-1], 0)",
+            "def V0():",
+            "    index = X[-1]",
+            "    ruban.pop(index)",
+            "    ruban.insert(index, 0)",
             "",
         ]
         self.code.extend(header)
@@ -105,11 +110,11 @@ class MTDVTranslator:
             self.add_line("X = [len(ruban) // 2]")
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
-            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=0)")
+            self.add_line("ruban = init_ruban(int(sys.argv[1]))")
             self.add_line("X = [len(ruban) // 2]")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
-            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=int(sys.argv[2]))")
+            self.add_line("ruban = init_ruban(int(sys.argv[1]))")
             self.add_line("X = [len(ruban) // 2]")
 
     def translate_lines(self, lines):
@@ -141,11 +146,11 @@ class MTDVTranslator:
 
                 elif tokens[i] == "1":
                     # Écrit 1 sur le ruban
-                    self.add_line("V1(ruban, X)")
+                    self.add_line("V1()")
 
                 elif tokens[i] == "0":
                     # Écrit 0 sur le ruban
-                    self.add_line("V0(ruban, X)")
+                    self.add_line("V0()")
 
                 elif tokens[i] == "I":
                     # Affiche l'état courant du ruban
@@ -163,7 +168,7 @@ class MTDVTranslator:
                     # Début d'un bloc de boucle
                     self.boucle_name.append(self.boucle_max_value)
                     self.boucle_max_value += 1
-                    self.add_line("def boucle{}(ruban, X):".format(self.boucle_name[-1]))
+                    self.add_line("def boucle{}():".format(self.boucle_name[-1]))
                     self.boucle_pos += 1
                     self.current_indent += 1
 
@@ -194,9 +199,9 @@ class MTDVTranslator:
                             self.current_indent -= 1
 
                     elif self.boucle_pos > 0:
-                        self.add_line("return boucle{}(ruban, X)".format(self.boucle_name[-1]))
+                        self.add_line("return boucle{}()".format(self.boucle_name[-1]))
                         self.current_indent -= 1
-                        self.add_line("boucle{}(ruban, X)".format(self.boucle_name[-1]))
+                        self.add_line("boucle{}()".format(self.boucle_name[-1]))
                         self.boucle_name.pop()
                         self.boucle_pos -= 1
                 i += 1
