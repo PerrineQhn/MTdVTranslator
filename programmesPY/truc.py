@@ -1,81 +1,64 @@
 import sys
-ruban = [0] * 1000
+def init_ruban(size, offset1=0, size2=0):
+   return ([0] * offset1) + ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * size2) + ([0] * (1000 - offset1 - size - size2 - 2 - 500))
+def G(X):
+    return X - 1
+
+def D(X):
+    return X + 1
+
+def V1(ruban, X):
+    return ruban[:X] + [1] + ruban[X + 1:]
+
+def V0(ruban, X):
+    return ruban[:X] + [0] + ruban[X + 1:]
+
+ruban = init_ruban(14, size2=20)
 X = len(ruban) // 2
-
-def G():
-    global X
-    X -= 1
-
-def D():
-    global X
-    X += 1
-
-def V1():
-    ruban[X] = 1
-
-def V0():
-    ruban[X] = 0
-
-for i in range(2+1):
-    ruban[X+i] = 1
-for i in range(4+1):
-    ruban[X+2+3+i] = 1
-r1 =''.join(map(str,ruban[500-35:500+35]))
-r2 =[' '] * 100
-r2[X-500+35] = 'X'
-r2 = ''.join(r2)
-print(r1)
-print(r2)
-def boucle0():
+print(''.join(map(str,ruban[500-35:500+35])))
+print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))
+def boucle0(ruban, X):
     if ruban[X] == 0:
-        return
-    D()
-    boucle0()
-boucle0()
-def boucle1():
-    def boucle2():
-        D()
+        return ruban, X
+    X = D(X)
+    return boucle0(ruban, X)
+ruban, X = boucle0(ruban, X)
+def boucle1(ruban, X):
+    def boucle2(ruban, X):
+        X = D(X)
         if ruban[X] == 1:
-            return
-        r1 =''.join(map(str,ruban[500-35:500+35]))
-        r2 =[' '] * 100
-        r2[X-500+35] = 'X'
-        r2 = ''.join(r2)
-        print(r1)
-        print(r2)
-        boucle2()
-    boucle2()
-    V0()
-    D()
+            return ruban, X
+        print(''.join(map(str,ruban[500-35:500+35])))
+        print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))
+        return boucle2(ruban, X)
+    ruban, X = boucle2(ruban, X)
+    ruban = V0(ruban, X)
+    X = D(X)
     if ruban[X] == 0:
-        return
-    def boucle3():
-        G()
+        return ruban, X
+    def boucle3(ruban, X):
+        X = G(X)
         if ruban[X] == 1:
-            return
-        boucle3()
-    boucle3()
-    D()
-    V1()
-    D()
-    boucle1()
-boucle1()
-def boucle4():
-    G()
+            return ruban, X
+        return boucle3(ruban, X)
+    ruban, X = boucle3(ruban, X)
+    X = D(X)
+    ruban = V1(ruban, X)
+    X = D(X)
+    return boucle1(ruban, X)
+ruban, X = boucle1(ruban, X)
+def boucle4(ruban, X):
+    X = G(X)
     if ruban[X] == 1:
-        return
-    boucle4()
-boucle4()
-def boucle5():
-    G()
+        return ruban, X
+    return boucle4(ruban, X)
+ruban, X = boucle4(ruban, X)
+def boucle5(ruban, X):
+    X = G(X)
     if ruban[X] == 0:
-        return
-    boucle5()
-boucle5()
-D()
-r1 =''.join(map(str,ruban[500-35:500+35]))
-r2 =[' '] * 100
-r2[X-500+35] = 'X'
-r2 = ''.join(r2)
-print(r1)
-print(r2)
+        return ruban, X
+    return boucle5(ruban, X)
+ruban, X = boucle5(ruban, X)
+X = D(X)
+print(''.join(map(str,ruban[500-35:500+35])))
+print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))
