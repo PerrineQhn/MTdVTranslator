@@ -22,11 +22,14 @@ tsFileName="${tsFileName%.*}"
 # Lance la traduction en redirigeant la sortie vers un fichier .py du même nom sans l'extension
 if [ -z "$3" ]; then
     python3 "$1" "$2" > "programmesPY/${tsFileName}.py"
+    # Exécute le fichier Python généré
+    python3 "programmesPY/${tsFileName}.py"
 elif [ -z "$4" ]; then
     python3 "$1" "$2" $3 > "programmesPY/${tsFileName}.py"
+    # Exécute le fichier Python généré
+    python3 "programmesPY/${tsFileName}.py" $3
 else
     python3 "$1" "$2" $3 $4 > "programmesPY/${tsFileName}.py"
+    # Exécute le fichier Python généré
+    python3 "programmesPY/${tsFileName}.py" $3 $4
 fi
-
-# Exécute le fichier Python généré
-python3 "programmesPY/${tsFileName}.py"

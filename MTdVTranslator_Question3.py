@@ -96,21 +96,23 @@ class MTDVTranslator:
 
         if args == 2:
             # Définit le nombre d'étapes par défaut si un seul argument
-            self.add_line("ruban = init_ruban(14, size2=20)")
+            self.add_line("ruban = init_ruban(0)")
             self.add_line("X = len(ruban) // 2")
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
-            self.add_line("ruban = init_ruban(int(sys.argv[2]), size2=0)")
+            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=0)")
             self.add_line("X = len(ruban) // 2")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
-            self.add_line("ruban = init_ruban(int(sys.argv[2]), size2=int(sys.argv[3]))")
+            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=int(sys.argv[2]))")
             self.add_line("X = len(ruban) // 2")
 
     def translate_lines(self, lines):
         """
         Interprète chaque ligne et génère les instructions Python associées.
         """
+        self.add_line("try:")
+        self.current_indent = 1
         for line in lines:
             # Ajout d'espaces avant parenthèses et accolades
             line = line.replace("}", " }")
@@ -146,14 +148,11 @@ class MTDVTranslator:
                     self.add_line("print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))")
 
                 elif tokens[i] == "P":
-                    # Met le programme en pause selon la valeur de step
-                    self.add_line("global step")
-                    self.add_line("if step > 0:")
-                    self.add_line("     input('Press Enter to continue')")
-                    self.add_line("     step -= 1")
-                    self.add_line("     boucle0()")
-                    self.add_line("else:")
-                    self.add_line("     sys.exit()")
+                    # Met le programme en pause
+                    # Affiche l'état courant du ruban
+                    self.add_line("print(''.join(map(str,ruban[500-35:500+35])))")
+                    self.add_line("print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))")
+                    self.add_line("input('Press Enter to continue')")
 
                 elif tokens[i] == "boucle":
                     # Début d'un bloc de boucle
@@ -196,6 +195,11 @@ class MTDVTranslator:
                         self.boucle_name.pop()
                         self.boucle_pos -= 1
                 i += 1
+        self.current_indent = 0
+        self.add_line("except IndexError:")
+        self.current_indent = 1
+        self.add_line("print('Ruban atteint à la fin, programme terminé')")
+        self.add_line("sys.exit(1)")
 
 
 if __name__ == "__main__":

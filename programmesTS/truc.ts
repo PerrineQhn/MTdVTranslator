@@ -1,11 +1,12 @@
-% les nombres doivent être séparés par un moins un 0
+% les nombres doivent ï¿½tre sï¿½parï¿½s par un moins un 0
 
 I
                                                          %  00111001111100
                                                          %    X
-% déplacement de l'oeil à l'extrêmité droite du 1er nombre
+% dï¿½placement de l'oeil ï¿½ l'extrï¿½mitï¿½ droite du 1er nombre
 boucle 
   si (0) fin }
+  P
   D
 }
                                                          %  00111001111100
@@ -21,16 +22,16 @@ boucle
                                                          %  00111001111100
                                                          %         X
 
-  % l'oeil est sur le bâton le plus à gauche du 2nd nombre
+  % l'oeil est sur le bï¿½ton le plus ï¿½ gauche du 2nd nombre
   % remplacement par un 0
   0
                                                          %  00111000111100
                                                          %         X
 
-  % était-ce le dernier bâton du 2nd nombre ? si oui, arrêt de la boucle
+  % ï¿½tait-ce le dernier bï¿½ton du 2nd nombre ? si oui, arrï¿½t de la boucle
   D
   si (0) fin }
-  % ajout d'un bâton à la fin du 1er nombre
+  % ajout d'un bï¿½ton ï¿½ la fin du 1er nombre
   boucle 
     G
     si (1) fin }
@@ -46,7 +47,7 @@ boucle
                                                          %       X
 } 
 
-% positionnement de l'oeil au début du résultat
+% positionnement de l'oeil au dï¿½but du rï¿½sultat
 boucle 
   G
   si (1) fin }
