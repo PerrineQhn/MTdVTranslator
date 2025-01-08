@@ -79,11 +79,13 @@ class MTDVTranslator:
             "",
             "def V1(ruban, X):",
             "    index = X[-1]",
-            "    ruban[-1][index] = 1",
+            "    ruban[-1].pop(index)",
+            "    ruban[-1].insert(index, 1)",
             "",
             "def V0(ruban, X):",
             "    index = X[-1]",
-            "    ruban[-1][index] = 0",
+            "    ruban[-1].pop(index)",
+            "    ruban[-1].insert(index, 0)",
             "",
         ]
         self.code.extend(header)
