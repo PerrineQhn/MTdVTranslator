@@ -6,7 +6,6 @@ I
 % d�placement de l'oeil � l'extr�mit� droite du 1er nombre
 boucle 
   si (0) fin }
-  P
   D
 }
                                                          %  00111001111100

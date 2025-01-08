@@ -1,5 +1,5 @@
 """
-Question 2.
+Question 3.
 Pour contourner l'impossibilité de l'utilisation de for, nous avons utilisé la récursivité pour gérer les boucles et les conditions.
 """
 
@@ -70,16 +70,20 @@ class MTDVTranslator:
             "def init_ruban(size, offset1=0, size2=0):",
             "   return ([0] * offset1) + ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * size2) + ([0] * (1000 - offset1 - size - size2 - 2 - 500))",
             "def G(X):",
-            "    return X - 1",
+            "    X.append(X[-1]-1)",
+            "    X.pop(0)",
             "",
             "def D(X):",
-            "    return X + 1",
+            "    X.append(X[-1]+1)",
+            "    X.pop(0)",
             "",
             "def V1(ruban, X):",
-            "    return ruban[:X] + [1] + ruban[X + 1:]",
+            "    index = X[-1]",
+            "    ruban[-1][index] = 1",
             "",
             "def V0(ruban, X):",
-            "    return ruban[:X] + [0] + ruban[X + 1:]",
+            "    index = X[-1]",
+            "    ruban[-1][index] = 0",
             "",
         ]
         self.code.extend(header)
@@ -96,16 +100,16 @@ class MTDVTranslator:
 
         if args == 2:
             # Définit le nombre d'étapes par défaut si un seul argument
-            self.add_line("ruban = init_ruban(0)")
-            self.add_line("X = len(ruban) // 2")
+            self.add_line("ruban = [init_ruban(0)]")
+            self.add_line("X = [len(ruban[-1]) // 2]")
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
             self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=0)")
-            self.add_line("X = len(ruban) // 2")
+            self.add_line("X = [len(ruban[-1]) // 2]")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
-            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=int(sys.argv[2]))")
-            self.add_line("X = len(ruban) // 2")
+            self.add_line("ruban = [init_ruban(int(sys.argv[1]), size2=int(sys.argv[2]))]")
+            self.add_line("X = [len(ruban[-1]) // 2]")
 
     def translate_lines(self, lines):
         """
@@ -128,30 +132,30 @@ class MTDVTranslator:
             while i < len(tokens):
                 if tokens[i] == "G":
                     # Avance à gauche
-                    self.add_line("X = G(X)")
+                    self.add_line("G(X)")
 
                 elif tokens[i] == "D":
                     # Avance à droite
-                    self.add_line("X = D(X)")
+                    self.add_line("D(X)")
 
                 elif tokens[i] == "1":
                     # Écrit 1 sur le ruban
-                    self.add_line("ruban = V1(ruban, X)")
+                    self.add_line("V1(ruban, X)")
 
                 elif tokens[i] == "0":
                     # Écrit 0 sur le ruban
-                    self.add_line("ruban = V0(ruban, X)")
+                    self.add_line("V0(ruban, X)")
 
                 elif tokens[i] == "I":
                     # Affiche l'état courant du ruban
-                    self.add_line("print(''.join(map(str,ruban[500-35:500+35])))")
-                    self.add_line("print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))")
+                    self.add_line("print(''.join(map(str,ruban[-1][500-35:500+35])))")
+                    self.add_line("print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))")
 
                 elif tokens[i] == "P":
                     # Met le programme en pause
                     # Affiche l'état courant du ruban
-                    self.add_line("print(''.join(map(str,ruban[500-35:500+35])))")
-                    self.add_line("print(''.join([' ']*(X-500+35) + ['X'] + [' ']*(100-(X-500+35)-1)))")
+                    self.add_line("print(''.join(map(str,ruban[-1][500-35:500+35])))")
+                    self.add_line("print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))")
                     self.add_line("input('Press Enter to continue')")
 
                 elif tokens[i] == "boucle":
@@ -167,17 +171,17 @@ class MTDVTranslator:
                     self.if_count += 1
                     i += 1
                     if tokens[i] == "(1)":
-                        self.add_line("if ruban[X] == 1:")
+                        self.add_line("if ruban[-1][X[-1]] == 1:")
                         self.current_indent += 1
 
                     elif tokens[i] == "(0)":
-                        self.add_line("if ruban[X] == 0:")
+                        self.add_line("if ruban[-1][X[-1]] == 0:")
                         self.current_indent += 1
 
                 elif tokens[i] == "fin":
                     # Fin d'une boucle
                     if self.boucle_pos > 0:
-                        self.add_line("return ruban, X")
+                        self.add_line("return")
                         self.current_indent -= 1
 
                 elif tokens[i] == "}":
@@ -191,7 +195,7 @@ class MTDVTranslator:
                     elif self.boucle_pos > 0:
                         self.add_line("return boucle{}(ruban, X)".format(self.boucle_name[-1]))
                         self.current_indent -= 1
-                        self.add_line("ruban, X = boucle{}(ruban, X)".format(self.boucle_name[-1]))
+                        self.add_line("boucle{}(ruban, X)".format(self.boucle_name[-1]))
                         self.boucle_name.pop()
                         self.boucle_pos -= 1
                 i += 1
