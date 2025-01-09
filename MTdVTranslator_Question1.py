@@ -13,9 +13,11 @@ class MTDVTranslator:
         """
         Initialise les variables nécessaires à la traduction.
         """
-        # Position et informations sur les boucles
+        # Compteur pour la position courante des boucles
         self.boucle_pos = 0
-        self.boucle_name = [()]
+        # Stocke les noms des boucles, leur position et leur indentation
+        self.boucle_name = []
+        # Compteur pour nommer les boucles
         self.boucle_max_value = 0
 
         # Compteurs pour conditions
@@ -31,6 +33,7 @@ class MTDVTranslator:
     def indent(self):
         """
         Gère l'indentation selon self.current_indent.
+        Retourne le nombre approprié d'espaces selon le niveau d'imbrication.
         """
         return "    " * self.current_indent
 
@@ -42,6 +45,7 @@ class MTDVTranslator:
 
     def translate_file(self, filename):
         """
+        Traduit le script MTdV en Python.
         Lit le fichier, filtre les lignes et lance la génération du script Python.
         """
         with open(filename, "r", encoding="latin-1") as f:
@@ -61,37 +65,44 @@ class MTDVTranslator:
 
     def generate_header(self):
         """
-        Ajoute les définitions des instructions et les variables de base telles que le ruban et les déplacements.
-        G() : Déplacement à gauche
-        D() : Déplacement à droite
-        V1() : Écriture d'un 1 sur le ruban
-        V0() : Écriture d'un 0 sur le ruban
+        Génère l'en-tête du programme Python avec:
+        - L'initialisation du ruban (liste de 1000 cases)
+        - La position initiale de la tête (au milieu du ruban)
+        - Les fonctions de base de la MTdV:
+            * G() : déplacement à gauche
+            * D() : déplacement à droite
+            * V1() : écriture d'un 1
+            * V0() : écriture d'un 0
         """
         header = [
             "import sys",
-            "ruban = [0] * 1000",
+            "",
+            "# Initialisation du ruban avec 1000 cases à 0" "ruban = [0] * 1000",
             "X = len(ruban) // 2",
             "",
             "def G():",
             "    global X",
-            "    X -= 1",
+            "    X -= 1 # Déplacement de la tête vers la gauche",
             "",
             "def D():",
             "    global X",
-            "    X += 1",
+            "    X += 1 # Déplacement de la tête vers la droite",
             "",
             "def V1():",
-            "    ruban[X] = 1",
+            "    ruban[X] = 1  # Écriture d'un 1 à la position courante",
             "",
             "def V0():",
-            "    ruban[X] = 0",
+            "    ruban[X] = 0  # Écriture d'un 0 à la position courante",
             "",
         ]
         self.code.extend(header)
 
     def generate_special(self, file):
         """
-        Gère le traitement des arguments passés au script pour construire le ruban.
+        Gère l'initialisation du ruban selon les arguments passés au script:
+        - Sans argument: définit juste le nombre d'étapes par défaut
+        - Un argument N1: initialise une plage de N1+1 cases à 1
+        - Deux arguments N1,N2: initialise deux plages séparées de N1+1 et N2+1 cases à 1
         """
         args = len(sys.argv)
         # 0 .\MTdVTranslator.py
@@ -105,20 +116,27 @@ class MTDVTranslator:
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
             x = sys.argv[2]
+            self.add_line("# Initialisation de la première plage de 1")
             self.add_line("for i in range({}+1):".format(x))
             self.add_line("  ruban[X+i] = 1")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
             x = sys.argv[2]
             y = sys.argv[3]
+            self.add_line("# Initialisation de la première plage de 1")
             self.add_line("for i in range({}+1):".format(x))
             self.add_line("    ruban[X+i] = 1")
+            self.add_line(
+                "# Initialisation de la seconde plage de 1 (séparée par 3 cases)"
+            )
             self.add_line("for i in range({}+1):".format(y))
             self.add_line("    ruban[X+{}+3+i] = 1".format(x))
 
     def translate_lines(self, lines):
         """
-        Interprète chaque ligne et génère les instructions Python associées.
+        Traduit chaque ligne de code MTdV en instructions Python.
+        Gère les commandes de base (G,D,0,1), l'affichage (I),
+        les pauses (P), et les structures de contrôle (boucle, si).
         """
         for line in lines:
             # Ajout d'espaces avant parenthèses et accolades
@@ -150,13 +168,18 @@ class MTDVTranslator:
                     self.add_line("V0()")
 
                 elif tokens[i] == "I":
-                    # Affiche l'état courant du ruban
+                    # Commande d'affichage du ruban
+                    # Affiche une fenêtre de 70 cases autour de la position courante
+                    self.add_line("")
+                    self.add_line("# Extraction de la portion visible du ruban")
                     self.add_line("r1 =''.join(map(str,ruban[500-35:500+35]))")
+                    self.add_line("# Création de la ligne de marqueur de position")
                     self.add_line("r2 =[' '] * 100")
-                    self.add_line("r2[X-500+35] = 'X'")
+                    self.add_line("r2[X-500+35] = 'X'  # Position de la tête")
                     self.add_line("r2 = ''.join(r2)")
-                    self.add_line("print(r1)")
-                    self.add_line("print(r2)")
+                    self.add_line("print(r1)  # Affichage du contenu")
+                    self.add_line("print(r2)  # Affichage de la position")
+                    self.add_line("")
 
                 elif tokens[i] == "P":
                     # Met le programme en pause selon la valeur de step
@@ -183,11 +206,15 @@ class MTDVTranslator:
                     self.if_count += 1
                     i += 1
                     if tokens[i] == "(1)":
-                        self.add_line("if ruban[X] == 1:")
+                        self.add_line(
+                            "if ruban[X] == 1:"
+                        )  # Test si la case courante contient un 1
                         self.current_indent += 1
 
                     elif tokens[i] == "(0)":
-                        self.add_line("if ruban[X] == 0:")
+                        self.add_line(
+                            "if ruban[X] == 0:"
+                        )  # Test si la case courante contient un 0
                         self.current_indent += 1
 
                 elif tokens[i] == "fin":
@@ -208,6 +235,7 @@ class MTDVTranslator:
                             self.current_indent -= 1
 
                     elif self.boucle_pos > 0:
+                        # Appel récursif de la boucle
                         self.add_line("boucle{}()".format(self.boucle_name[-1][0]))
                         self.else_count -= 1
                         self.current_indent -= 1

@@ -1,7 +1,6 @@
 """
-Question 3.
-Pour contourner l'impossibilité de l'affectation et de la variable globale dans le corps de fonctions,
-nous avons transformé le curseur en une variable mutable (liste) avec un seul élément.
+Question 4.
+"les fonctions ne peuvent avoir au plus qu'un unique argument"
 """
 
 import sys
@@ -12,9 +11,11 @@ class MTDVTranslator:
         """
         Initialise les variables nécessaires à la traduction.
         """
-        # Position et informations sur les boucles
+        # Compteur pour la position courante des boucles
         self.boucle_pos = 0
+        # Stocke les noms des boucles, leur position et leur indentation
         self.boucle_name = []
+        # Compteur pour nommer les boucles
         self.boucle_max_value = 0
 
         # Compteurs pour conditions
@@ -30,6 +31,7 @@ class MTDVTranslator:
     def indent(self):
         """
         Gère l'indentation selon self.current_indent.
+        Retourne le nombre approprié d'espaces selon le niveau d'imbrication.
         """
         return "    " * self.current_indent
 
@@ -41,6 +43,7 @@ class MTDVTranslator:
 
     def translate_file(self, filename):
         """
+        Traduit le script MTdV en Python.
         Lit le fichier, filtre les lignes et lance la génération du script Python.
         """
         with open(filename, "r", encoding="latin-1") as f:
@@ -60,32 +63,42 @@ class MTDVTranslator:
 
     def generate_header(self):
         """
-        Ajoute les définitions des instructions et les variables de base telles que le ruban et les déplacements.
-        G() : Déplacement à gauche
-        D() : Déplacement à droite
-        V1() : Écriture d'un 1 sur le ruban
-        V0() : Écriture d'un 0 sur le ruban
+        Génère les fonctions de base pour la Machine de Turing:
+        - init_ruban(): Crée un ruban avec des plages de 1 selon les paramètres
+        - G(X): Déplace le curseur à gauche en modifiant la liste X
+        - D(X): Déplace le curseur à droite en modifiant la liste X
+        - V1(ruban, X): Écrit un 1 à la position courante
+        - V0(ruban, X): Écrit un 0 à la position courante
+
+        Note: Toutes les modifications se font via des opérations sur des listes
+        pour éviter les affectations directes.
         """
         header = [
             "import sys",
+            "",
+            "# Fonction d'initialisation du ruban avec gestion des arguments",
             "def init_ruban(size):",
             "   if sys.argv[2]:",
             "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * int(sys.argv[2])) + ([0] * (1000 - size - int(sys.argv[2]) - 2 - 500))",
             "   else:",
             "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([0] * (1000 - size - 2 - 500))",
+            "# Déplacement à gauche via modifications de liste",
             "def G(X):",
             "    X.append(X[-1]-1)",
             "    X.pop(0)",
             "",
+            "# Déplacement à droite via modifications de liste",
             "def D(X):",
             "    X.append(X[-1]+1)",
             "    X.pop(0)",
             "",
+            "# Écriture d'un 1 via pop/insert pour éviter l'affectation",
             "def V1():",
             "    index = X[-1]",
             "    ruban.pop(index)",
             "    ruban.insert(index, 1)",
             "",
+            "# Écriture d'un 0 via pop/insert pour éviter l'affectation",
             "def V0():",
             "    index = X[-1]",
             "    ruban.pop(index)",
@@ -96,7 +109,12 @@ class MTDVTranslator:
 
     def generate_special(self, file):
         """
-        Gère le traitement des arguments passés au script pour construire le ruban.
+        Gère l'initialisation du ruban selon les arguments passés au script:
+        - Sans argument: définit juste le nombre d'étapes par défaut
+        - Un argument N1: initialise une plage de N1+1 cases à 1
+        - Deux arguments N1,N2: initialise deux plages séparées de N1+1 et N2+1 cases à 1
+
+        Note: X est initialisé comme une liste à un élément pour permettre sa modification sans affectation.
         """
         args = len(sys.argv)
         # 0 .\MTdVTranslator.py
@@ -119,8 +137,13 @@ class MTDVTranslator:
 
     def translate_lines(self, lines):
         """
-        Interprète chaque ligne et génère les instructions Python associées.
+        Traduit chaque ligne de code MTdV en instructions Python.
+        Gère les commandes de base (G,D,0,1), l'affichage (I),
+        les pauses (P), et les structures de contrôle (boucle, si).
+        Utilise un bloc try/except pour gérer proprement la sortie du
+        programme quand le curseur sort des limites du ruban.
         """
+        # Protection contre les dépassements de ruban
         self.add_line("try:")
         self.current_indent = 1
         for line in lines:
@@ -137,31 +160,35 @@ class MTDVTranslator:
             i = 0
             while i < len(tokens):
                 if tokens[i] == "G":
-                    # Avance à gauche
+                    # Déplacement gauche via liste mutable
                     self.add_line("G(X)")
 
                 elif tokens[i] == "D":
-                    # Avance à droite
+                    # Déplacement droite via liste mutable
                     self.add_line("D(X)")
 
                 elif tokens[i] == "1":
-                    # Écrit 1 sur le ruban
+                    # Ecrit 1 sur le ruban via pop/insert
                     self.add_line("V1()")
 
                 elif tokens[i] == "0":
-                    # Écrit 0 sur le ruban
+                    # Ecrit 0 sur le ruban via pop/insert
                     self.add_line("V0()")
 
                 elif tokens[i] == "I":
-                    # Affiche l'état courant du ruban
+                    # Affiche l'état courant du ruban et la position du curseur
                     self.add_line("print(''.join(map(str,ruban[500-35:500+35])))")
-                    self.add_line("print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))")
+                    self.add_line(
+                        "print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))"
+                    )
 
                 elif tokens[i] == "P":
                     # Met le programme en pause
-                    # Affiche l'état courant du ruban
+                    # Affiche l'état courant du ruban et la position du curseur
                     self.add_line("print(''.join(map(str,ruban[500-35:500+35])))")
-                    self.add_line("print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))")
+                    self.add_line(
+                        "print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))"
+                    )
                     self.add_line("input('Press Enter to continue')")
 
                 elif tokens[i] == "boucle":
@@ -177,10 +204,12 @@ class MTDVTranslator:
                     self.if_count += 1
                     i += 1
                     if tokens[i] == "(1)":
+                        # Test si la case courante est égale à 1
                         self.add_line("if ruban[X[-1]] == 1:")
                         self.current_indent += 1
 
                     elif tokens[i] == "(0)":
+                        # Test si la case courante est égale à 0
                         self.add_line("if ruban[X[-1]] == 0:")
                         self.current_indent += 1
 
@@ -205,6 +234,8 @@ class MTDVTranslator:
                         self.boucle_name.pop()
                         self.boucle_pos -= 1
                 i += 1
+
+        # Gestion des erreurs de limite de ruban
         self.current_indent = 0
         self.add_line("except IndexError:")
         self.current_indent = 1
