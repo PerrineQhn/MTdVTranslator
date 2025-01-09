@@ -17,10 +17,17 @@ def V1():
 def V0():
     ruban[X] = 0
 
-for i in range(2+1):
-    ruban[X+i] = 1
-for i in range(2+1):
-    ruban[X+2+3+i] = 1
+for i in range(5+1):
+  ruban[X+i] = 1
+def boucle0():
+    D()
+    V0()
+    D()
+    if ruban[X] == 0:
+        0
+    else:
+        boucle0()
+boucle0()
 
 r1 =''.join(map(str,ruban[500-35:500+35]))
 r2 =[' '] * 100
@@ -29,52 +36,42 @@ r2 = ''.join(r2)
 print(r1)
 print(r2)
 
-def boucle0():
-    if ruban[X] == 0:
-        0
-    else:
-        D()
-        boucle0()
-boucle0()
+G()
 def boucle1():
+    G()
+    
+    r1 =''.join(map(str,ruban[500-35:500+35]))
+    r2 =[' '] * 100
+    r2[X-500+35] = 'X'
+    r2 = ''.join(r2)
+    print(r1)
+    print(r2)
+    
     def boucle2():
-        D()
-        if ruban[X] == 1:
+        G()
+        if ruban[X] == 0:
             0
         else:
             boucle2()
     boucle2()
-    V0()
-    D()
+    G()
     if ruban[X] == 0:
         0
     else:
+        D()
+        V1()
         def boucle3():
-            G()
-            if ruban[X] == 1:
+            D()
+            if ruban[X] == 0:
                 0
             else:
                 boucle3()
         boucle3()
-        D()
-        V1()
-        D()
+        G()
+        V0()
         boucle1()
 boucle1()
-def boucle4():
-    G()
-    if ruban[X] == 1:
-        0
-    else:
-        boucle4()
-boucle4()
-def boucle5():
-    G()
-    if ruban[X] == 0:
-        0
-    else:
-        boucle5()
-boucle5()
+D()
 D()
 
 r1 =''.join(map(str,ruban[500-35:500+35]))

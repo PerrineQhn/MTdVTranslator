@@ -31,49 +31,43 @@ print(r2)
 
 def boucle0():
     if ruban[X] == 0:
-        0
-    else:
-        D()
-        boucle0()
+        return
+    D()
+    boucle0()
 boucle0()
 def boucle1():
     def boucle2():
         D()
         if ruban[X] == 1:
-            0
-        else:
-            boucle2()
+            return
+        boucle2()
     boucle2()
     V0()
     D()
     if ruban[X] == 0:
-        0
-    else:
-        def boucle3():
-            G()
-            if ruban[X] == 1:
-                0
-            else:
-                boucle3()
+        return
+    def boucle3():
+        G()
+        if ruban[X] == 1:
+            return
         boucle3()
-        D()
-        V1()
-        D()
-        boucle1()
+    boucle3()
+    D()
+    V1()
+    D()
+    boucle1()
 boucle1()
 def boucle4():
     G()
     if ruban[X] == 1:
-        0
-    else:
-        boucle4()
+        return
+    boucle4()
 boucle4()
 def boucle5():
     G()
     if ruban[X] == 0:
-        0
-    else:
-        boucle5()
+        return
+    boucle5()
 boucle5()
 D()
 
