@@ -1,77 +1,103 @@
 import sys
-def init_ruban(size):
-   if sys.argv[2]:
-       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * int(sys.argv[2])) + ([0] * (1000 - size - int(sys.argv[2]) - 2 - 500))
-   else:
-       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([0] * (1000 - size - 2 - 500))
-def G(X):
-    X.append(X[-1]-1)
-    X.pop(0)
 
-def D(X):
-    X.append(X[-1]+1)
-    X.pop(0)
+# Initialisation du ruban avec 1000 cases à 0
+ruban = [0] * 1000
+X = len(ruban) // 2
+
+def G():
+    global X
+    X -= 1 # Déplacement de la tête vers la gauche
+
+def D():
+    global X
+    X += 1 # Déplacement de la tête vers la droite
 
 def V1():
-    index = X[-1]
-    ruban.pop(index)
-    ruban.insert(index, 1)
+    ruban[X] = 1  # Écriture d'un 1 à la position courante
 
 def V0():
-    index = X[-1]
-    ruban.pop(index)
-    ruban.insert(index, 0)
+    ruban[X] = 0  # Écriture d'un 0 à la position courante
 
-ruban = init_ruban(int(sys.argv[1]))
-X = [len(ruban) // 2]
-try:
-    print(''.join(map(str,ruban[500-35:500+35])))
-    print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))
-    def boucle0():
-        if ruban[X[-1]] == 0:
-            return
-        D(X)
-        return boucle0()
-    boucle0()
-    def boucle1():
-        def boucle2():
-            D(X)
-            if ruban[X[-1]] == 1:
-                return
-            print(''.join(map(str,ruban[500-35:500+35])))
-            print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))
-            return boucle2()
-        boucle2()
-        V0()
-        D(X)
-        if ruban[X[-1]] == 0:
-            return
+# Initialisation de la première plage de 1
+for i in range(2+1):
+    ruban[X+i] = 1
+# Initialisation de la seconde plage de 1 (séparée par 3 cases)
+for i in range(3+1):
+    ruban[X+2+3+i] = 1
+
+# Extraction de la portion visible du ruban
+r1 =''.join(map(str,ruban[500-35:500+35]))
+# Création de la ligne de marqueur de position
+r2 =[' '] * 100
+r2[X-500+35] = 'X'  # Position de la tête
+r2 = ''.join(r2)
+print(r1)  # Affichage du contenu
+print(r2)  # Affichage de la position
+
+def boucle0():
+    if ruban[X] == 0:
+        0
+    else:
+        D()
+        boucle0()
+boucle0()
+def boucle1():
+    def boucle2():
+        D()
+        if ruban[X] == 1:
+            0
+        else:
+            
+            # Extraction de la portion visible du ruban
+            r1 =''.join(map(str,ruban[500-35:500+35]))
+            # Création de la ligne de marqueur de position
+            r2 =[' '] * 100
+            r2[X-500+35] = 'X'  # Position de la tête
+            r2 = ''.join(r2)
+            print(r1)  # Affichage du contenu
+            print(r2)  # Affichage de la position
+            
+            boucle2()
+    boucle2()
+    V0()
+    D()
+    if ruban[X] == 0:
+        0
+    else:
         def boucle3():
-            G(X)
-            if ruban[X[-1]] == 1:
-                return
-            return boucle3()
+            G()
+            if ruban[X] == 1:
+                0
+            else:
+                boucle3()
         boucle3()
-        D(X)
+        D()
         V1()
-        D(X)
-        return boucle1()
-    boucle1()
-    def boucle4():
-        G(X)
-        if ruban[X[-1]] == 1:
-            return
-        return boucle4()
-    boucle4()
-    def boucle5():
-        G(X)
-        if ruban[X[-1]] == 0:
-            return
-        return boucle5()
-    boucle5()
-    D(X)
-    print(''.join(map(str,ruban[500-35:500+35])))
-    print(''.join([' ']*(X[-1]-500+35) + ['X'] + [' ']*(100-(X[-1]-500+35)-1)))
-except IndexError:
-    print('Ruban atteint à la fin, programme terminé')
-    sys.exit(1)
+        D()
+        boucle1()
+boucle1()
+def boucle4():
+    G()
+    if ruban[X] == 1:
+        0
+    else:
+        boucle4()
+boucle4()
+def boucle5():
+    G()
+    if ruban[X] == 0:
+        0
+    else:
+        boucle5()
+boucle5()
+D()
+
+# Extraction de la portion visible du ruban
+r1 =''.join(map(str,ruban[500-35:500+35]))
+# Création de la ligne de marqueur de position
+r2 =[' '] * 100
+r2[X-500+35] = 'X'  # Position de la tête
+r2 = ''.join(r2)
+print(r1)  # Affichage du contenu
+print(r2)  # Affichage de la position
+
