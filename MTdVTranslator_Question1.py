@@ -77,7 +77,8 @@ class MTDVTranslator:
         header = [
             "import sys",
             "",
-            "# Initialisation du ruban avec 1000 cases à 0" "ruban = [0] * 1000",
+            "# Initialisation du ruban avec 1000 cases à 0",
+            "ruban = [0] * 1000",
             "X = len(ruban) // 2",
             "",
             "def G():",
