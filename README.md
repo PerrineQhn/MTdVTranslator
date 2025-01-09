@@ -103,6 +103,7 @@ Ces librairies sont légères, robustes, et adaptées pour manipuler les fichier
 | `execute_python_script(path, args)` | Exécute le script Python généré.           | `path`: chemin du fichier<br>`args`: arguments supplémentaires| Exécute le script et affiche les résultats.                                         |
 
 ---
+
 ## Utilitaire
 
 ### Script d'Exécution (executeur.sh)
