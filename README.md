@@ -1,5 +1,7 @@
 # Traducteur Machine de Turing de Del Vigna (MTdV) vers Python
 
+Auteurs : Perrine Quennehen et Zhongjie Li
+
 ## Description du Projet
 
 Implémentation d'un traducteur de programmes écrits en Machine de Turing de Del Vigna (MTdV) vers Python, avec quatre variantes progressives ajoutant différentes contraintes sur le code Python généré.
