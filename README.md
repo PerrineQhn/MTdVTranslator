@@ -6,7 +6,7 @@ Auteurs : Perrine Quennehen et Zhongjie Li
 
 Implémentation d'un traducteur de programmes écrits en Machine de Turing de Del Vigna (MTdV) vers Python, avec quatre variantes progressives ajoutant différentes contraintes sur le code Python généré.
 
-```
+``` bash
 ├── MTdVTranslator_Question1.py    # Implémentation de base
 ├── MTdVTranslator_Question2.py    # Version avec return et variables locales
 ├── MTdVTranslator_Question3.py    # Version sans affectation ni variables locales
