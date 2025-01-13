@@ -30,6 +30,7 @@ class MTDVTranslator:
     def indent(self):
         """
         Gère l'indentation selon self.current_indent.
+        Retourne le nombre approprié d'espaces selon le niveau d'imbrication.
         """
         return "    " * self.current_indent
 
@@ -41,6 +42,7 @@ class MTDVTranslator:
 
     def translate_file(self, filename):
         """
+        Traduit le script MTdV en Python.
         Lit le fichier, filtre les lignes et lance la génération du script Python.
         """
         with open(filename, "r", encoding="latin-1") as f:
@@ -103,6 +105,12 @@ class MTDVTranslator:
     def generate_special(self, file):
         """
         Gère le traitement des arguments passés au script pour construire le ruban.
+        Arguments nécessaires au script :
+            arg1 : le script de traducteur
+            arg2 : le script TS
+        Arguments optionnels au script : 
+            arg3 : la taille de la 1ère plage avec des 1 sur le ruban
+            arg4 : la taille de la 2ème plage avec des 1 sur le ruban
         """
         args = len(sys.argv)
         # 0 .\MTdVTranslator.py
@@ -126,6 +134,7 @@ class MTDVTranslator:
     def translate_lines(self, lines):
         """
         Interprète chaque ligne et génère les instructions Python associées.
+        un "try - catch" est ajouté pour englober le code pour éviter que le curseur dépasse le ruban
         """
         self.add_line("try:")
         self.current_indent = 1

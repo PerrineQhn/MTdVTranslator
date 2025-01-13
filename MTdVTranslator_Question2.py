@@ -29,6 +29,7 @@ class MTDVTranslator:
     def indent(self):
         """
         Gère l'indentation selon self.current_indent.
+        Retourne le nombre approprié d'espaces selon le niveau d'imbrication.
         """
         return "    " * self.current_indent
 
@@ -40,6 +41,7 @@ class MTDVTranslator:
 
     def translate_file(self, filename):
         """
+        Traduit le script MTdV en Python.
         Lit le fichier, filtre les lignes et lance la génération du script Python.
         """
         with open(filename, "r", encoding="latin-1") as f:
@@ -103,7 +105,10 @@ class MTDVTranslator:
 
     def generate_special(self, file):
         """
-        Gère le traitement des arguments passés au script pour construire le ruban.
+        Gère l'initialisation du ruban selon les arguments passés au script:
+        - Sans argument: définit juste le nombre d'étapes par défaut
+        - Un argument N1: initialise une plage de N1+1 cases à 1
+        - Deux arguments N1,N2: initialise deux plages séparées de N1+1 et N2+1 cases à 1
         """
         args = len(sys.argv)
         # 0 .\MTdVTranslator.py
@@ -126,7 +131,9 @@ class MTDVTranslator:
 
     def translate_lines(self, lines):
         """
-        Interprète chaque ligne et génère les instructions Python associées.
+        Traduit chaque ligne de code MTdV en instructions Python.
+        Gère les commandes de base (G,D,0,1), l'affichage (I),
+        les pauses (P), et les structures de contrôle (boucle, si).
         """
         for line in lines:
             # Ajout d'espaces avant parenthèses et accolades
@@ -163,8 +170,8 @@ class MTDVTranslator:
                     self.add_line("r2 =[' '] * 100")
                     self.add_line("r2[X-500+35] = 'X'")
                     self.add_line("r2 = new_join(r2)")
-                    self.add_line("print(r1)")
-                    self.add_line("print(r2)")
+                    self.add_line("print(r1) # Affichage du contenu")
+                    self.add_line("print(r2) # Affichage de la position")
 
                 elif tokens[i] == "P":
                     # Met le programme en pause selon la valeur de step
