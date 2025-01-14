@@ -9,7 +9,7 @@ Implémentation d'un traducteur de programmes écrits en Machine de Turing de De
 ``` bash
 ├── MTdVTranslator_Question1.py    # Implémentation de base
 ├── MTdVTranslator_Question2.py    # Version avec return et variables locales
-├── MTdVTranslator_Question3.py    # Version sans affectation ni variables locales
+├── MTdVTranslator_Question3.py    # Version sans affectation ni variables locales dans le corps de fonctions
 ├── MTdVTranslator_Question4.py    # Version avec un seul argument par fonction
 ├── programmesTS/                  # Dossier des fichiers source MTdV
 ├── programmesPY/                  # Dossier des fichiers Python générés
@@ -47,7 +47,7 @@ Implémentation d'un traducteur de programmes écrits en Machine de Turing de De
 #### Question 4 (Un Argument)
 
 - Maximum un argument par fonction
-- Solution : Variables globales pour ruban/curseur
+- Solution : Combinaison de listes mutables et de fonctions imbriquées (une fonction au sein d'une autre)
   
 ## Modules
 
@@ -96,11 +96,10 @@ Ces librairies sont légères, robustes, et adaptées pour manipuler les fichier
 
 | **Fonction**                 | **Description**                                    | **Paramètres**                                                 | **Résultat attendu**                                                                 |
 |-------------------------------|----------------------------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| `load_file(filepath)`         | Charge un fichier TS en mémoire.                  | `filepath`: chemin du fichier TS                              | Retourne le contenu sous forme de liste de lignes.                                   |
-| `parse_instruction(lines)`    | Extrait les instructions MTdV.                    | `lines`: liste des lignes du fichier TS                       | Retourne une structure de données interprétable.                                     |
-| `translate_instruction(instr)`| Traduit une instruction MTdV en Python.           | `instr`: chaîne de caractères                                 | Retourne le code Python équivalent.                                                 |
-| `generate_python_file(path, code)` | Génère un fichier Python.                   | `path`: chemin de sortie<br>`code`: code Python généré        | Crée un fichier Python fonctionnel.                                                 |
-| `execute_python_script(path, args)` | Exécute le script Python généré.           | `path`: chemin du fichier<br>`args`: arguments supplémentaires| Exécute le script et affiche les résultats.                                         |
+| `translate_file(filepath)`         | Charger et lir un fichier TS ligne par ligne en mémoire.                  | `filepath`: chemin du fichier TS                              | Retourne le contenu sous forme de liste de lignes.                                   |
+| `generate_header()`    | Générer une en-tête qui englobe l'importation de librairies, l'initialisation de la bande et du curseur, les fonctions basiques des comportements de la machine de Turing, les équivalents de fonctions len(), join(), etc. dans un sous-ensemble de scripts python                    |                      | Une première partie du script python généré                                 |
+| `generate_special()`| Gérer le traitement des arguments passés au script pour construire la bande.           |                                | Retourner une bande avec une ou deux plages de 1 initialisées.                                                 |
+| `translate_lines(lines)` | Reprendre les lignes du fichier TS lues, traduire le fichier TS ligne par ligne et générer les instructions Python associées.                   | `lines`: les lignes du fichier TS chargé        | Retourner les instructions de python générées                                                 |
 
 ---
 
@@ -135,6 +134,9 @@ Pour traduire et exécuter un fichier `TS` :
 ```bash
 sh executeur.sh MTdVTranslator_QuestionX.py programmeTS/exemple.ts [arg1] [arg2]
 ```
+
+- arg1 : une plage de 1 initialisée dans la bande
+- arg2 : une deuxième plage de 1 initialisée dans la bande
 
 Exemple :
 
