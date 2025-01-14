@@ -180,7 +180,7 @@ La logique reste la même, mais l’arrêt de la récursivité se fait via retur
 
    - MTdV : boucle
    - Python :
-     
+
    ```python
    def boucleX():
    ```
@@ -191,7 +191,7 @@ La logique reste la même, mais l’arrêt de la récursivité se fait via retur
 
    - MTdV : fin
    - Python :
-     
+
    ```python
    return
    ```
@@ -202,7 +202,7 @@ La logique reste la même, mais l’arrêt de la récursivité se fait via retur
 
    - MTdV : }
    - Python :
-     
+
    ```python
    boucleX()
    ```
