@@ -1,22 +1,34 @@
 import sys
-
-# Initialisation du ruban avec 1000 cases à 0
-ruban = [0] * 1000
-X = len(ruban) // 2
+sys.setrecursionlimit(2000)
+def init_ruban(size, size2=0):
+   return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * size2) + ([0] * (1000 - size - size2 - 2 - 500))
 
 def G():
     global X
-    X -= 1 # Déplacement de la tête vers la gauche
+    X -= 1
 
 def D():
     global X
-    X += 1 # Déplacement de la tête vers la droite
+    X += 1
 
 def V1():
-    ruban[X] = 1  # Écriture d'un 1 à la position courante
+    ruban[X] = 1
 
 def V0():
-    ruban[X] = 0  # Écriture d'un 0 à la position courante
+    ruban[X] = 0
+
+def new_join(lst, index=0, result=""):
+   if index == new_len(lst):
+       return result
+   return new_join(lst, index + 1, result + "{}".format(lst[index]))
+
+def new_len(lst):
+   if not lst:
+       return 0
+   return 1 + new_len(lst[1:])
+
+ruban = [0] * 1000
+X = new_len(ruban) // 2
 
 step = 14
 G()
@@ -39,9 +51,8 @@ def boucle0():
         D()
         D()
         if ruban[X] == 1:
-            0
-        else:
-            boucle1()
+            return
+        boucle1()
     boucle1()
     V0()
     D()
@@ -52,20 +63,15 @@ def boucle0():
         G()
         G()
         if ruban[X] == 1:
-            0
-        else:
-            boucle2()
+            return
+        boucle2()
     boucle2()
-    
-    # Extraction de la portion visible du ruban
-    r1 =''.join(map(str,ruban[500-35:500+35]))
-    # Création de la ligne de marqueur de position
+    r1 =new_join(ruban[500-35:500+35])
     r2 =[' '] * 100
-    r2[X-500+35] = 'X'  # Position de la tête
-    r2 = ''.join(r2)
-    print(r1)  # Affichage du contenu
-    print(r2)  # Affichage de la position
-    
+    r2[X-500+35] = 'X'
+    r2 = new_join(r2)
+    print(r1) # Affichage du contenu
+    print(r2) # Affichage de la position
     global step
     if step > 0:
          input('Press Enter to continue')

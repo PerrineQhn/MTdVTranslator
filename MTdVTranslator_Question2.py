@@ -122,12 +122,21 @@ class MTDVTranslator:
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
             x = sys.argv[2]
-            self.add_line("ruban = init_ruban({}, size2=0)".format(x))
+            self.add_line("# Initialisation de la première plage de 1")
+            self.add_line("for i in range({}+1):".format(x))
+            self.add_line("  ruban[X+i] = 1")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
             x = sys.argv[2]
             y = sys.argv[3]
-            self.add_line("ruban = init_ruban({}, size2={})".format(x,y))
+            self.add_line("# Initialisation de la première plage de 1")
+            self.add_line("for i in range({}+1):".format(x))
+            self.add_line("    ruban[X+i] = 1")
+            self.add_line(
+                "# Initialisation de la seconde plage de 1 (séparée par 3 cases)"
+            )
+            self.add_line("for i in range({}+1):".format(y))
+            self.add_line("    ruban[X+{}+3+i] = 1".format(x))
 
     def translate_lines(self, lines):
         """
@@ -138,7 +147,7 @@ class MTDVTranslator:
         for line in lines:
             # Ajout d'espaces avant parenthèses et accolades
             line = line.replace("}", " }")
-            line = line.replace("(", " (")
+            line = line.replace("(", "(")
 
             # Suppression des commentaires
             index = line.find("%")

@@ -71,11 +71,13 @@ class MTDVTranslator:
         header = [
             "import sys",
             "sys.setrecursionlimit(2000)",
-            "def init_ruban(size):",
-            "   if sys.argv[2]:",
-            "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * int(sys.argv[2])) + ([0] * (1000 - size - int(sys.argv[2]) - 2 - 500))",
+            "def init_ruban(params):",
+            "   size = params[0]",
+            "   size2 = params[1] if len(params) > 1 else 0",
+            "   if size2 > 0:"
+            "      return ([0] * 500) + ([1] * size) + ([0] * 2) + ([1] * size2) + ([0] * (1000 - size - size2 - 2 - 500))",
             "   else:",
-            "       return ([0] * 500) + ([1] * size) + ([0] * 2) + ([0] * (1000 - size - 2 - 500))",
+            "      return ([0] * 500) + ([1] * size) + ([0] * 2) + ([0] * (1000 - size - 2 - 500))",
             "def G(X):",
             "    X.append(X[-1]-1)",
             "    X.pop(0)",
@@ -131,11 +133,11 @@ class MTDVTranslator:
             self.add_line("X = [new_len(ruban) // 2]")
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
-            self.add_line("ruban = init_ruban(int(sys.argv[1]))")
+            self.add_line("ruban = init_ruban([int(sys.argv[1]) + 1])")
             self.add_line("X = [new_len(ruban) // 2]")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
-            self.add_line("ruban = init_ruban(int(sys.argv[1]))")
+            self.add_line("ruban = init_ruban([int(sys.argv[1]) + 1, int(sys.argv[2]) + 1])")
             self.add_line("X = [new_len(ruban) // 2]")
 
     def translate_lines(self, lines):

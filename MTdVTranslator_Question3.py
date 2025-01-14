@@ -124,11 +124,11 @@ class MTDVTranslator:
             self.add_line("X = [new_len(ruban) // 2]")
         elif args == 3:
             # Initialise le ruban avec des 1 sur une plage de taille x
-            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=0)")
+            self.add_line("ruban = init_ruban(int(sys.argv[1])+1, size2=0)")
             self.add_line("X = [new_len(ruban) // 2]")
         elif args == 4:
             # Initialise deux plages successives de 1 sur le ruban
-            self.add_line("ruban = init_ruban(int(sys.argv[1]), size2=int(sys.argv[2]))")
+            self.add_line("ruban = init_ruban(int(sys.argv[1])+1, size2=int(sys.argv[2])+1)")
             self.add_line("X = [new_len(ruban) // 2]")
 
     def translate_lines(self, lines):
