@@ -142,7 +142,7 @@ class MTDVTranslator:
         for line in lines:
             # Ajout d'espaces avant parenthèses et accolades
             line = line.replace("}", " }")
-            line = line.replace("(", "(")
+            line = line.replace("(", " (")
 
             # Suppression des commentaires inline
             index = line.find("%")

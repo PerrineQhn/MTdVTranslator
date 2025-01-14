@@ -19,11 +19,11 @@ def V0():
     ruban[X] = 0  # Écriture d'un 0 à la position courante
 
 # Initialisation de la première plage de 1
-for i in range(3+1):
+for i in range(2+1):
     ruban[X+i] = 1
 # Initialisation de la seconde plage de 1 (séparée par 3 cases)
-for i in range(4+1):
-    ruban[X+3+3+i] = 1
+for i in range(2+1):
+    ruban[X+2+3+i] = 1
 
 # Extraction de la portion visible du ruban
 r1 =''.join(map(str,ruban[500-35:500+35]))
